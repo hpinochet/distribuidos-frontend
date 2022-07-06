@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <center> <h2>Gráfico en vivo valorización Bitcoin Japonés</h2> </center>
+    <h2 class="text-center">Gráfico en vivo valorización Bitcoin Japonés</h2>
 
     <GChart
       type="LineChart"
@@ -10,29 +10,80 @@
       :key="componentKey"
     />
 
-    <center> 
-        <div>
-            <MDBBtn color="primary" @click="actualizarGrafico()" > Actualizar </MDBBtn>
-        </div> 
-    </center>
+    <div class="text-center">
+        <MDBBtn color="primary" @click="actualizarGrafico()" > Actualizar </MDBBtn>
+    </div> 
     
     <p> </p>
 
-    <center> <h2>Tabla de datos grafico</h2> </center>
+    <h2 class="text-center">Tabla de datos grafico</h2>
 
-    <div class="container">  
-
-        <MDBListGroup>
-            <div v-for="(data,index) in collectionData" :key="index">
-                <MDBListGroupItem flex-fill> {{data[0]}} </MDBListGroupItem>
+    <div class="container" style="width: 350px;">  
+        <MDBListGroup vertical>
+            <div v-for="(data) in collectionData">
+                <div class="row">
+                    <div class="col" style="border: 1px solid black">
+                        {{data[0]}}
+                    </div>
+                    <div class="col" style="border: 1px solid black">
+                        {{data[1]}}
+                    </div>      
+                </div>
             </div>
-        </MDBListGroup>
-        <MDBListGroup >
-            <div v-for="(data,index) in collectionData" :key="index">
-                <MDBListGroupItem flex-fill> {{data[1]}} </MDBListGroupItem>
-            </div>
-        </MDBListGroup>
+        </MDBListGroup> 
+    </div>
 
+    <h2 class="text-center">Tabla de calculos basicos</h2>
+
+    <div class="container" style="width: 350px;">  
+        <MDBListGroup vertical>
+            <div class="row">
+                
+                <div class="col" style="border: 1px solid black">
+                    Media:
+                </div>
+                <div class="col" style="border: 1px solid black">
+                    {{Valores.Promedio}}
+                </div>
+            
+            </div>
+
+            <div class="row">
+
+                <div class="col" style="border: 1px solid black">
+                    Máximo
+                </div>
+                <div class="col" style="border: 1px solid black">
+                    {{Valores.Max}}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+
+                <div class="col" style="border: 1px solid black">
+                    Mínimo:
+                </div>
+                <div class="col" style="border: 1px solid black">
+                    {{Valores.Min}}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col" style="border: 1px solid black">
+                    Desviación Estándar:
+                </div>
+                <div class="col" style="border: 1px solid black">
+                    {{Valores.Desviacion}}
+                </div>
+            
+            </div>
+
+
+        </MDBListGroup> 
     </div>
 
     
@@ -64,21 +115,35 @@ export default {
             },
             width: 1200,
             height: 400
-        }
+        },
+        Valores : [],
+        Media: 0,
+        Minimo: 0,
+        Maximo: 0,
+        Desviacion: 0
         };
     },
     methods: {
         actualizarGrafico(){
             this.componentKey += 1;
-        }
+        },
     },
     async mounted (){
+        
         await axios
             .get( "http://localhost:8080/api/report/" )
             .then( response => {
                 this.collectionData = response.data;
             })
             .catch(( e => console.log( e ) ))
-        }
-    };
+
+        await axios
+            .post( "http://localhost:8080/api/report/getCalculus", this.collectionData )
+            .then(( response ) => {
+            this.Valores = response.data;
+            })
+            .catch(( error ) => console.log( error ))
+        
+    }
+}
 </script>
