@@ -11,7 +11,7 @@
     />
 
     <div class="text-center">
-        <MDBBtn color="primary" @click="actualizarGrafico()" > Actualizar </MDBBtn>
+        <MDBBtn color="primary" @click="ActualizarBtn()" > Actualizar </MDBBtn>
     </div> 
     
     <p> </p>
@@ -124,26 +124,31 @@ export default {
         };
     },
     methods: {
-        actualizarGrafico(){
-            this.componentKey += 1;
+        async actualizarGrafico(){
+            await axios
+                .get( "http://localhost:8080/api/report/" )
+                .then( response => {
+                    this.collectionData = response.data;
+                })
+                .catch(( e => console.log( e ) ))
         },
+        async actualizarCalculos(){
+            await axios
+                .post( "http://localhost:8080/api/report/getCalculus", this.collectionData )
+                .then(( response ) => {
+                this.Valores = response.data;
+                })
+                .catch(( error ) => console.log( error ))
+        },
+        ActualizarBtn(){
+            this.componentKey += 1;
+            this.actualizarGrafico(),
+            this.actualizarCalculos()
+        }
     },
     async mounted (){
-        
-        await axios
-            .get( "http://localhost:8080/api/report/" )
-            .then( response => {
-                this.collectionData = response.data;
-            })
-            .catch(( e => console.log( e ) ))
-
-        await axios
-            .post( "http://localhost:8080/api/report/getCalculus", this.collectionData )
-            .then(( response ) => {
-            this.Valores = response.data;
-            })
-            .catch(( error ) => console.log( error ))
-        
+        await this.actualizarGrafico(),
+        await this.actualizarCalculos()
     }
 }
 </script>
