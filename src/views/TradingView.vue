@@ -126,7 +126,7 @@ export default {
     methods: {
         async actualizarGrafico(){
             await axios
-                .get( "http://localhost:8080/api/report/" )
+                .get( "http://164.92.96.206:8081/api/report/" )
                 .then( response => {
                     this.collectionData = response.data;
                 })
@@ -134,7 +134,7 @@ export default {
         },
         async actualizarCalculos(){
             await axios
-                .post( "http://localhost:8080/api/report/getCalculus", this.collectionData )
+                .post( "http://164.92.96.206:8081/api/report/getCalculus", this.collectionData )
                 .then(( response ) => {
                 this.Valores = response.data;
                 })
